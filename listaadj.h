@@ -32,7 +32,7 @@ public:
     *          vertice na lista de adjacencias
     **/
     void inserirVertice(string rotuloVertice) {
-        if (obterIndiceVertice(rotuloVertice) != -1) {
+        if (obterIndiceVertice(rotuloVertice) == -1) {
             vertices.push_back(rotuloVertice);
             vector<pair<int, int>> m;
             arestas.push_back(m);
@@ -65,7 +65,8 @@ public:
     void inserirArestaDirecionada(string rotuloVOrigem, string rotuloVDestino, int peso) {
         int i = obterIndiceVertice(rotuloVOrigem);
         int j = obterIndiceVertice(rotuloVDestino);
-        arestas[i].push_back(make_pair(j, peso));
+        pair<int, int> aresta = make_pair(j, peso);
+        arestas[i].push_back(aresta);
     }
 
     /**
@@ -79,10 +80,7 @@ public:
             if (arestas[i][j].first == k)
                 return true;
         }
-        for (int j = 0; j < arestas[k].size(); j++) {
-            if (arestas[k][j].first == i)
-                return true;
-        }
+     
         return false;
     }
 
