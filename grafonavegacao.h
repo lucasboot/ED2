@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <algorithm>
 using namespace std;
 
 class GrafoListaAdj {
@@ -32,18 +33,18 @@ private:
     **/
     void dfs(string rotuloVOrigem, bool* indicesVerticesVisitados) {
         int j = obterIndiceVertice(rotuloVOrigem);
-        if (j != -1) {
-            if (indicesVerticesVisitados[j] == true) {
-                return;
-            }
-            else {
-                indicesVerticesVisitados[j] = true;
-                for (int i = 0; i < arestas[j].size(); i++) {
-                    dfs(vertices[arestas[j][i].first], indicesVerticesVisitados);
-                }
-            }
+      
+        if (indicesVerticesVisitados[j] == true) {
+          return;
         }
-        return;
+        else {
+          indicesVerticesVisitados[j] = true;
+          for (int i = 0; i < arestas[j].size(); i++) {
+              dfs(vertices[arestas[j][i].first], indicesVerticesVisitados);
+          }
+         }
+        
+        
     }
 
 public:
@@ -114,16 +115,15 @@ public:
     * void dfs(string rotuloVOrigem, bool* indicesVerticesVisitados)
     **/
     bool haCaminho(string rotuloVOrigem, string rotuloVDestino) {
-        bool v[20] = {};
-        dfs(rotuloVOrigem, v);
+        bool* v = new bool[vertices.size()]{false};
+        int i = obterIndiceVertice(rotuloVOrigem);
         int j = obterIndiceVertice(rotuloVDestino);
-        if (rotuloVOrigem == rotuloVDestino)
+        if (!saoConectados(rotuloVOrigem, rotuloVDestino) && i==j) {
             return false;
-        if (v[j]) {
-            return true;
         }
         else {
-            return false;
+            dfs(rotuloVOrigem, v);
+            return v[j];
         }
     }
 
@@ -136,21 +136,29 @@ public:
     * A melhor forma de fazer isto  reusando a funcao dfs.
     **/
     int colorir() {
-        string cores[8] = { "amarelo", "roxo", "branco", "rosa", "vermelho", "verde", "preto", "coral" };
-        bool v[20] = {false};
-        int componentes = 0;
-        for (int i = 0; i < vertices.size(); i++) {
-            if (!v[i]) {
-                dfs(vertices[i], v);
-                for (int j = 0; j < vertices.size(); j++) {
-                    if (v[j] == true) {
-                        vertices[j] = cores[i];
+        //string cores[8] = { "amarelo", "roxo", "branco", "rosa", "vermelho", "verde", "preto", "coral" };
+        int tam = vertices.size();
+        bool* v = new bool[tam]{false};
+        int componentes = 1;
+        if (tam > 0) {
+            for (int i = 0; i < vertices.size(); i++) {
+                bool* visitados = new bool[tam] {false};
+                if (!v[i]) {
+                    dfs(vertices[i], visitados);
+                    for (int j = 0; j < vertices.size(); j++) {
+                        if (visitados[j] == true) {
+                            vertices[j] = "corComp" + to_string(componentes);
+                            v[j] = true;
+                        }
                     }
+                    componentes++;
                 }
-                componentes++;
             }
         }
-        return componentes;
+        else {
+            return -1;
+        }
+        return componentes-1;
     }
 
     /**
@@ -164,20 +172,22 @@ public:
     *  necessrio utilizar a ED fila.
     **/
     int* bfs(string rotuloVOrigem) {
-        int distancias[30] = { };
-        distancias[obterIndiceVertice(rotuloVOrigem)] = 0;
-        bool visitados[30] = { };
-        visitados[obterIndiceVertice(rotuloVOrigem)] = true;
-        queue<string> q;
-        q.push(rotuloVOrigem);
+        int o = obterIndiceVertice(rotuloVOrigem);
+        int tam = vertices.size();
+        int* distancias = new int[tam]{0};
+        distancias[o] = 0;
+        bool* visitados = new bool[tam]{false};
+        visitados[o] = true;
+        queue<int> q;
+        q.push(o);
         while (!q.empty()) {
-            int indice = obterIndiceVertice(q.front());
+            int indice = q.front();
             q.pop();
-            for (int i = 0; i < arestas[indice].size(); i++) {
-                if (!visitados[i]) {
-                    visitados[i] = true;
-                    distancias[i] = distancias[indice] + 1;
-                    q.push(vertices[i]);
+            for (auto i: arestas[indice]) {
+                if (!visitados[i.first]) {
+                    visitados[i.first] = true;
+                    distancias[i.first] = distancias[indice] + 1;
+                    q.push(i.first);
                 }
 
              
