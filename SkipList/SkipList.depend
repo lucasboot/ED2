@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1631648889 source:c:\users\varel\documents\ufrn\2021.1\algoritmos e estruturas de  dados 2\skiplist\main.c
+	<stdio.h>
+	"skiplist.h"
+
+1631648392 c:\users\varel\documents\ufrn\2021.1\algoritmos e estruturas de  dados 2\skiplist\skiplist.h
+	<stdio.h>
+	<stdlib.h>
+
